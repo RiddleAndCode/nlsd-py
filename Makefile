@@ -1,6 +1,7 @@
 NAME := nlsd
 PROFILE ?= debug
-# TARGET ?= x86_64-unknown-linux-gnu
+TARGET ?=
+ALPINE_DOCKER_IMAGE ?= nlsd-py-alpine-builder
 
 ifeq ($(PROFILE),release)
 RELEASE_FLAG := --release
@@ -24,6 +25,15 @@ build: venv
 	done
 .PHONY: build
 
+docker-build:
+	docker build -f docker/Dockerfile.alpine --build-arg LIBNAME=$(NAME) \
+		-t $(ALPINE_DOCKER_IMAGE) .
+	mkdir -p target/x86_64-alpine-linux-musl/release
+	docker run --rm  -v $(shell pwd)/target/x86_64-alpine-linux-musl/release:/tmp/target \
+		$(ALPINE_DOCKER_IMAGE) cp /build/$(NAME).so /tmp/target/$(NAME).so
+
+.PHONY: docker-build
+
 check:
 	cargo check $(RELEASE_FLAG) $(TARGET_FLAG)
 .PHONY: check
@@ -34,3 +44,4 @@ venv:
 
 test: build
 	. venv/bin/activate && python -m pytest
+.PHONY: test

@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:experimental
+
+FROM alpine:edge
+
+RUN apk add -U python3 python3-dev rust cargo
+
+ENV CARGO_HOME=/usr/local/cargo
+RUN mkdir -p $CARGO_HOME
+
+WORKDIR build
+COPY . .
+
+ARG LIBNAME=nlsd
+RUN --mount=type=ssh \
+    --mount=type=cache,id=cargo_deps,target=/usr/local/cargo \
+    --mount=type=cache,id=cargo_build,target=/build/target \
+    cargo build --release && \
+    cp /build/target/release/lib$LIBNAME.so $LIBNAME.so
