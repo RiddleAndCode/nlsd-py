@@ -7,9 +7,9 @@ A [Natural Language Structured Document](https://github.com/RiddleAndCode/nlsd/t
 ```python
 import nlsd
 
-str = nlsd.to_string([1, "hello"])
-print(str) // the list where an item is 1 and another item is `hello`
+st = nlsd.to_string([1, "hello"])
+print(st) # the list where an item is 1 and another item is `hello`
 
-obj = nlsd.from_string(str)
-print(obj) // [1, "hello"]
+obj = nlsd.from_string(st)
+print(obj) # [1, "hello"]
 ```
