@@ -39,7 +39,7 @@ fn to_string(py: Python, obj: PyObject) -> PyResult<String> {
 }
 
 py_module_initializer!(nlsd, |py, m| {
-    m.add(py, "__doc__", "Module documentation string")?;
+    m.add(py, "__doc__", "NLSD serializer / deserializer")?;
     m.add(py, "from_string", py_fn!(py, from_string(string: String)))?;
     m.add(py, "to_string", py_fn!(py, to_string(obj: PyObject)))?;
     Ok(())

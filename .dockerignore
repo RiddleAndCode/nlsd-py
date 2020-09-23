@@ -9,3 +9,6 @@ rust-toolchain
 **/__pycache__/
 **/*$py.class
 .pytest_cache/
+
+# Misc
+Makefile

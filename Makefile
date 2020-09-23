@@ -31,8 +31,19 @@ docker-build:
 	mkdir -p target/x86_64-alpine-linux-musl/release
 	docker run --rm  -v $(shell pwd)/target/x86_64-alpine-linux-musl/release:/tmp/target \
 		$(ALPINE_DOCKER_IMAGE) cp /build/$(NAME).so /tmp/target/$(NAME).so
-
 .PHONY: docker-build
+
+github-release: docker-build
+	cargo build --target x86_64-unknown-linux-gnu
+	cargo build --target x86_64-unknown-linux-gnu --release
+	mkdir -p target/github-release
+	cp target/x86_64-alpine-linux-musl/release/$(NAME).so \
+		target/github-release/$(NAME)-x86_64-alpine-linux-musl.so
+	cp target/x86_64-unknown-linux-gnu/release/lib$(NAME).so \
+		target/github-release/$(NAME)-x86_64-unknown-linux-gnu.so
+	cp target/x86_64-unknown-linux-gnu/debug/lib$(NAME).so \
+		target/github-release/$(NAME)-x86_64-unknown-linux-gnu.debug.so
+.PHONY: release
 
 check:
 	cargo check $(RELEASE_FLAG) $(TARGET_FLAG)
