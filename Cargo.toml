@@ -1,0 +1,18 @@
+[package]
+name = "nlsd-py"
+version = "0.1.0"
+authors = ["Julian Popescu <jpopesculian@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "nlsd"
+crate-type = ["cdylib"]
+
+[dependencies]
+serde-transcode = "1.1.0"
+nlsd = "0.1.1"
+serde-pickle = "0.6.1"
+
+[dependencies.pyo3]
+version = "0.12.1"
+features = ["extension-module"]
