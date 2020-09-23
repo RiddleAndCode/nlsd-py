@@ -1,4 +1,10 @@
+# Rust
 /target
 Cargo.lock
+
+# Python
 /venv
 **/*.pyc
+**/__pycache__/
+**/*$py.class
+.pytest_cache/
