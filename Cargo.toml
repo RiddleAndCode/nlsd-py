@@ -4,6 +4,11 @@ version = "0.1.2"
 authors = ["Julian Popescu <jpopesculian@gmail.com>"]
 edition = "2018"
 
+[features]
+default = ["pickle"]
+pickle = ["serde-pickle"]
+json = ["serde_json"]
+
 [lib]
 name = "nlsd"
 crate-type = ["cdylib"]
@@ -11,7 +16,8 @@ crate-type = ["cdylib"]
 [dependencies]
 nlsd = "=0.1.2"
 serde-transcode = "1.1.0"
-serde-pickle = "0.6.1"
+serde-pickle = { version = "0.6.1", optional = true }
+serde_json = { version = "1.0.64", optional = true }
 
 [dependencies.cpython]
 version = "0.5.1"

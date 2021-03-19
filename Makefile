@@ -17,8 +17,16 @@ TARGET_FLAG := --target $(TARGET)
 TARGET_DIR := target/$(TARGET)
 endif
 
+ifeq ($(BACKEND),json)
+FEATURE_FLAG := --no-default-features --features json
+FEATURE_TAG := -json
+else
+FEATURE_FLAG :=
+FEATURE_TAG :=
+endif
+
 build: venv
-	cargo build $(RELEASE_FLAG) $(TARGET_FLAG)
+	cargo build $(RELEASE_FLAG) $(TARGET_FLAG) $(FEATURE_FLAG)
 	cp $(TARGET_DIR)/$(PROFILE)/lib$(NAME).so $(TARGET_DIR)/$(PROFILE)/$(NAME).so
 	for d in $$(ls venv/lib | grep python); do \
 		cp $(TARGET_DIR)/$(PROFILE)/$(NAME).so venv/lib/$$d/site-packages/$(NAME).so; \
@@ -38,15 +46,15 @@ github-release: docker-build
 	cargo build --target x86_64-unknown-linux-gnu --release
 	mkdir -p target/github-release
 	cp target/x86_64-alpine-linux-musl/release/$(NAME).so \
-		target/github-release/$(NAME)-x86_64-alpine-linux-musl.so
+		target/github-release/$(NAME)$(FEATURE_TAG)-x86_64-alpine-linux-musl.so
 	cp target/x86_64-unknown-linux-gnu/release/lib$(NAME).so \
-		target/github-release/$(NAME)-x86_64-unknown-linux-gnu.so
+		target/github-release/$(NAME)$(FEATURE_TAG)-x86_64-unknown-linux-gnu.so
 	cp target/x86_64-unknown-linux-gnu/debug/lib$(NAME).so \
-		target/github-release/$(NAME)-x86_64-unknown-linux-gnu.debug.so
+		target/github-release/$(NAME)$(FEATURE_TAG)-x86_64-unknown-linux-gnu.debug.so
 .PHONY: release
 
 check:
-	cargo check $(RELEASE_FLAG) $(TARGET_FLAG)
+	cargo check $(RELEASE_FLAG) $(TARGET_FLAG) $(FEATURE_FLAG)
 .PHONY: check
 
 venv:

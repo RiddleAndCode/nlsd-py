@@ -1,42 +1,25 @@
+#[cfg(all(feature = "json", feature = "pickle"))]
+compile_error!("the `json` and `pickle` feature cannot both be enabled");
+
+#[cfg(not(any(feature = "json", feature = "pickle")))]
+compile_error!("either the `json` or `pickle` feature must be enabled");
+
 #[macro_use]
 extern crate cpython;
 
-use cpython::PyBytes;
-use cpython::{PyObject, PyResult, Python};
-use std::io::Write;
+mod error;
 
-py_exception!(nlsd, SerializeError);
+#[cfg(feature = "pickle")]
+#[path = "./pickle.rs"]
+mod backend;
 
-py_exception!(nlsd, DeserializeError);
+#[cfg(feature = "json")]
+#[path = "./json.rs"]
+mod backend;
 
-fn from_string(py: Python, string: String) -> PyResult<PyObject> {
-    let mut deserializer = nlsd::Deserializer::from_str(&string);
+use backend::*;
 
-    let mut out = Vec::new();
-    out.write_all(&[b'\x80', b'\x03'])
-        .map_err(|e| DeserializeError::new(py, e.to_string()))?; // PROTO v3
-    let mut serializer = serde_pickle::Serializer::new(&mut out, false);
-    serde_transcode::transcode(&mut deserializer, &mut serializer)
-        .map_err(|e| DeserializeError::new(py, e.to_string()))?;
-    out.write_all(&[b'.'])
-        .map_err(|e| DeserializeError::new(py, e.to_string()))?; // STOP
-
-    let obj = py
-        .import("pickle")?
-        .call(py, "loads", (PyBytes::new(py, &out),), None)?;
-    obj.extract(py)
-}
-
-fn to_string(py: Python, obj: PyObject) -> PyResult<String> {
-    let pickled = py.import("pickle")?.call(py, "dumps", (obj,), None)?;
-    let mut deserializer =
-        serde_pickle::Deserializer::new(pickled.cast_as::<PyBytes>(py)?.data(py), true);
-    let mut out = String::new();
-    let mut serializer = nlsd::Serializer::new(&mut out);
-    serde_transcode::transcode(&mut deserializer, &mut serializer)
-        .map_err(|e| SerializeError::new(py, e.to_string()))?;
-    Ok(out)
-}
+use cpython::PyObject;
 
 py_module_initializer!(nlsd, |py, m| {
     m.add(py, "__doc__", "NLSD serializer / deserializer")?;
