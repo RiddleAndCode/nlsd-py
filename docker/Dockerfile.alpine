@@ -11,8 +11,9 @@ WORKDIR build
 COPY . .
 
 ARG LIBNAME=nlsd
+ARG BACKEND=pickle
 RUN --mount=type=ssh \
     --mount=type=cache,id=cargo_deps,target=/usr/local/cargo \
     --mount=type=cache,id=cargo_build,target=/build/target \
-    cargo build --release && \
+    cargo build --release --no-default-features --features $BACKEND && \
     cp /build/target/release/lib$LIBNAME.so $LIBNAME.so

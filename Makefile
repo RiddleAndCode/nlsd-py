@@ -20,9 +20,11 @@ endif
 ifeq ($(BACKEND),json)
 FEATURE_FLAG := --no-default-features --features json
 FEATURE_TAG := -json
+DOCKER_BACKEND := json
 else
 FEATURE_FLAG :=
 FEATURE_TAG :=
+DOCKER_BACKEND := pickle
 endif
 
 build: venv
@@ -34,7 +36,8 @@ build: venv
 .PHONY: build
 
 docker-build:
-	docker build -f docker/Dockerfile.alpine --build-arg LIBNAME=$(NAME) \
+	docker build -f docker/Dockerfile.alpine \
+		--build-arg LIBNAME=$(NAME) --build-arg BACKEND=$(DOCKER_BACKEND) \
 		-t $(ALPINE_DOCKER_IMAGE) .
 	mkdir -p target/x86_64-alpine-linux-musl/release
 	docker run --rm  -v $(shell pwd)/target/x86_64-alpine-linux-musl/release:/tmp/target \
