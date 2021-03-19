@@ -19,11 +19,25 @@ mod backend;
 
 use backend::*;
 
-use cpython::PyObject;
+use cpython::{PyDict, PyObject};
 
 py_module_initializer!(nlsd, |py, m| {
     m.add(py, "__doc__", "NLSD serializer / deserializer")?;
-    m.add(py, "from_string", py_fn!(py, from_string(string: String)))?;
-    m.add(py, "to_string", py_fn!(py, to_string(obj: PyObject)))?;
+    m.add(
+        py,
+        "from_string",
+        py_fn!(
+            py,
+            from_string(string: String, de_opts: Option<&PyDict> = None)
+        ),
+    )?;
+    m.add(
+        py,
+        "to_string",
+        py_fn!(
+            py,
+            to_string(obj: PyObject, ser_opts: Option<&PyDict> = None)
+        ),
+    )?;
     Ok(())
 });
