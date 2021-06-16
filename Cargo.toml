@@ -1,6 +1,6 @@
 [package]
 name = "nlsd-py"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Julian Popescu <jpopesculian@gmail.com>"]
 edition = "2018"
 
@@ -14,7 +14,7 @@ name = "nlsd"
 crate-type = ["cdylib"]
 
 [dependencies]
-nlsd = "=0.1.2"
+nlsd = "=0.1.3"
 serde-transcode = "1.1.0"
 serde-pickle = { version = "0.6.1", optional = true }
 serde_json = { version = "1.0.64", optional = true }
